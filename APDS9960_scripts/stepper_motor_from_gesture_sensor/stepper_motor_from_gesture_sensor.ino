@@ -1,6 +1,9 @@
 #include <Arduino_APDS9960.h>
 #include <Stepper.h>
 
+// need to configure for the low power/ sleep state later
+#define APDS9960_INT 2
+
 const int stepsPerRevolution = 2048;  // For 28BYJ-48 stepper
 Stepper stepperMotor(stepsPerRevolution, 8, 10, 9, 11);
 
@@ -22,6 +25,7 @@ void setup() {
 
 void loop() {
    // Check if a proximity reading is available.
+   // proximity is an int if it gets defined
   if (APDS.proximityAvailable()) {
     proximity = APDS.readProximity();
   }
@@ -31,13 +35,17 @@ void loop() {
     int gesture = APDS.readGesture();
     switch (gesture) {
       case GESTURE_UP:
+      if (proximity !== NULL && proximity < 20){
         Serial.println("Detected UP gesture");
         stepperMotor.step(50);  
+      }
         break;
 
       case GESTURE_DOWN:
+      if (proximity !== NULL && proximity < 20){
         Serial.println("Detected DOWN gesture");
         stepperMotor.step(-50);  
+      }
         break;
 
       // we can add in left and right gestures for other applications later on but we can exclude them for now
